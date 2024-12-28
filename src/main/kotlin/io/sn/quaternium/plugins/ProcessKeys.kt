@@ -46,24 +46,27 @@ class SubjectParser(private val raw: List<String>) {
             "单选题", "多选题" -> {
                 val orig = raw[raw.indexOf("未作答") + 1]
                 orig.removePrefix("参考答案").let { answer ->
-                    answer.split(".").filter { it.isNotEmpty() }.map { choice ->
-                        when (choice) {
-                            "A" -> 0
-                            "B" -> 1
-                            "C" -> 2
-                            "D" -> 3
-                            "E" -> 4
-                            "F" -> 5
-                            else -> {
-                                throw IllegalStateException("choice unsupported: $choice, $orig")
-                            }
-                        }
-                    }
+                    answer.split(".").filter { it.isNotEmpty() }.map { choice -> charIndexer(choice, orig) }
                 }
             }
 
             else -> throw IllegalStateException("Unknown subject type: $type")
         }
 
+    companion object {
+        fun charIndexer(char: String, orig: String): Int {
+            if (char.length == 1 && "A" <= char && char <= "Z") {
+                return char[0].code - 'A'.code
+            } else
+                throw IllegalStateException("choice unsupported: $char, $orig")
+        }
+
+        fun charDedexer(code: Int?): String {
+            if (code == null) return "空"
+            return if (code in 0..25) {
+                (code + 'A'.code).toChar().toString()
+            } else "空"
+        }
+    }
 
 }

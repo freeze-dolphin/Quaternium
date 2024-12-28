@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.sn.quaternium.dictFilename
+import io.sn.quaternium.plugins.SubjectParser.Companion.charDedexer
 import kotlinx.html.body
 import kotlinx.html.h1
 import kotlinx.html.p
@@ -113,16 +114,7 @@ fun Route.quizRouting() {
             val answer: String = when (question) {
                 is Question.SingleChoiceQuestion -> {
                     val answer = params["question_$index"]?.toIntOrNull()
-                    answer.let {
-                        when (it) {
-                            0 -> "A"
-                            1 -> "B"
-                            2 -> "C"
-                            3 -> "D"
-                            4 -> "E"
-                            else -> "空"
-                        }
-                    }
+                    charDedexer(answer)
                 }
 
                 is Question.MultipleChoiceQuestion -> {
@@ -131,14 +123,7 @@ fun Route.quizRouting() {
                     }
                     if (answers.none { it != null }) "空" else {
                         answers.filterNotNull().sorted().joinToString(", ") {
-                            when (it) {
-                                0 -> "A"
-                                1 -> "B"
-                                2 -> "C"
-                                3 -> "D"
-                                4 -> "E"
-                                else -> "空"
-                            }
+                            return@joinToString charDedexer(it)
                         }
                     }
                 }
