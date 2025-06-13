@@ -16,3 +16,7 @@ function clearAndRedirect(link) {
     deleteAllCookies();
     document.location = link;
 }
+
+function redirect(link) {
+    document.location = link;
+}

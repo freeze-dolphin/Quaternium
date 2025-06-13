@@ -12,6 +12,7 @@ import kotlinx.html.body
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.serialization.Serializable
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.charset.Charset
@@ -57,6 +58,26 @@ val questionPool: List<Question>
             }
     }
 
+suspend fun RoutingContext.respondRandQuestions() {
+    val logger = LoggerFactory.getLogger("QuizApp")
+
+    val questions = questionPool.shuffled().take(10)
+    call.sessions.set(QuizSession(questions))
+    logger.info("Set session with questions: $questions")
+    call.respondHtml {
+        quizPage(dictName, questions)
+    }
+}
+
+suspend fun RoutingContext.respondRandQuestions(logger: Logger) {
+    val questions = questionPool.shuffled().take(10)
+    call.sessions.set(QuizSession(questions))
+    logger.info("Set session with questions: $questions")
+    call.respondHtml {
+        quizPage(dictName, questions)
+    }
+}
+
 fun Route.quizRouting() {
     val logger = LoggerFactory.getLogger("QuizApp")
 
@@ -65,9 +86,19 @@ fun Route.quizRouting() {
     }
 
     get("/") {
-        val questions = questionPool.shuffled().take(10)
-        call.sessions.set(QuizSession(questions))
-        logger.info("Set session with questions: $questions")
+        respondRandQuestions()
+    }
+
+    get("/review") {
+        val session = call.sessions.get<QuizSession>()
+        logger.info("Retrieved session: $session")
+
+        if (session == null) {
+            respondRandQuestions(logger)
+            return@get
+        }
+
+        val questions = session.questions
         call.respondHtml {
             quizPage(dictName, questions)
         }
@@ -79,12 +110,7 @@ fun Route.quizRouting() {
         logger.info("Retrieved session: $session")
 
         if (session == null) {
-            call.respondHtml {
-                body {
-                    h1 { +"Error: Session expired or not found." }
-                    p { +"Please try again." }
-                }
-            }
+            respondRandQuestions(logger)
             return@post
         }
 

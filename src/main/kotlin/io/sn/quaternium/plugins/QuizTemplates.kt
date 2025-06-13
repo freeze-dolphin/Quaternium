@@ -102,16 +102,7 @@ fun HTML.resultPage(dictName: String, score: Int, total: Int, results: List<Trip
             id = "clearButton"
             +"清除并重新生成"
         }
-        script {
-            unsafe {
-                +"""
-                document.getElementById('clearButton').addEventListener('click',
-                    function() {
-                        clearAndRedirect('/');
-                    });
-                """.trimIndent()
-            }
-        }
+
         p { +"得分: $score / $total" }
         hr()
         var idx = 1
@@ -200,6 +191,26 @@ fun HTML.resultPage(dictName: String, score: Int, total: Int, results: List<Trip
             }
             hr()
             idx += 1
+        }
+
+        button {
+            id = "reviewButton"
+            +"回顾"
+        }
+
+        script {
+            unsafe {
+                +"""
+                document.getElementById('clearButton').addEventListener('click',
+                    function() {
+                        clearAndRedirect('/');
+                    });
+                document.getElementById('reviewButton').addEventListener('click',
+                    function() {
+                        redirect('/review');
+                    });
+                """.trimIndent()
+            }
         }
     }
 }
