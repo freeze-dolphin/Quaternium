@@ -124,6 +124,10 @@ fun HTML.resultPage(dictName: String, score: Int, total: Int, results: List<Trip
                         question.options.forEachIndexed { index, option ->
                             p {
                                 label {
+                                    if (index == question.correctAnswer) {
+                                        style = "color: green; font-weight: bold;"
+                                    }
+
                                     input(type = InputType.radio) {
                                         disabled = true
                                         checked = content == (index + 65).toChar().toString()
@@ -144,6 +148,10 @@ fun HTML.resultPage(dictName: String, score: Int, total: Int, results: List<Trip
                         question.options.forEachIndexed { index, option ->
                             p {
                                 label {
+                                    if (index in question.correctAnswers) {
+                                        style = "color: green; font-weight: bold;"
+                                    }
+
                                     input(type = InputType.checkBox) {
                                         disabled = true
                                         checked = content.split(", ").contains((index + 65).toChar().toString())
@@ -165,6 +173,11 @@ fun HTML.resultPage(dictName: String, score: Int, total: Int, results: List<Trip
                         repeat(2) { index ->
                             p {
                                 label {
+                                    val ans = if (question.correctAnswer) 0 else 1
+                                    if (ans == index) {
+                                        style = "color: green; font-weight: bold;"
+                                    }
+
                                     val opt = when (index) {
                                         0 -> "对"
                                         1 -> "错"
