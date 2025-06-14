@@ -22,8 +22,9 @@ fun HTML.quizPage(dictName: String, questions: List<Question>) {
                 +"""
                 document.getElementById('clearButton').addEventListener('click',
                     function() {
-                        deleteAllCookies();
-                    });
+                        clearAndRedirect('/');
+                    }
+                );
                 """.trimIndent()
             }
         }
@@ -204,11 +205,13 @@ fun HTML.resultPage(dictName: String, score: Int, total: Int, results: List<Trip
                 document.getElementById('clearButton').addEventListener('click',
                     function() {
                         clearAndRedirect('/');
-                    });
+                    }
+                );
                 document.getElementById('reviewButton').addEventListener('click',
                     function() {
                         redirect('/review');
-                    });
+                    }
+                );
                 """.trimIndent()
             }
         }

@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.html.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.sn.quaternium.dictFilename
@@ -99,8 +100,11 @@ fun Route.quizRouting() {
         }
 
         val questions = session.questions
+
+        val shuffled = questions.shuffled()
+        call.sessions.set(QuizSession(shuffled))
         call.respondHtml {
-            quizPage(dictName, questions)
+            quizPage(dictName, shuffled)
         }
     }
 
@@ -169,6 +173,12 @@ fun Route.quizRouting() {
             resultPage(dictName, score, questions.size, results)
         }
     }
+
+    post("/clear-session") {
+        call.sessions.clear<QuizSession>()
+        call.respondRedirect("/")
+    }
+
 }
 
 fun Application.configureRouting() {
